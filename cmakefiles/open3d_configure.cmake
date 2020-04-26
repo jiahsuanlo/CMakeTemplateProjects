@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
 set (CMAKE_CXX_STANDARD 11)
 
+cmake_policy(SET CMP0074 NEW)
+
 #project(TestVisualizer)
 
 # Find installed Open3D, this imports
@@ -14,7 +16,17 @@ set (CMAKE_CXX_STANDARD 11)
 
 if(WIN32)
     #find_package(Open3D HINTS ${CMAKE_INSTALL_PREFIX}/CMake)
-    find_package(Open3D HINTS $ENV{Open3D_Root})
+    find_package(Open3D HINTS $ENV{Open3D_ROOT})
+    include_directories(${Open3D_INCLUDE_DIRS})
+    link_directories(${Open3D_LIBRARY_DIRS})
+    IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        message("debug mode")
+        link_directories(${Open3D_LIBRARY_DIRS}/Debug)
+    ELSE()
+        message("release mode")
+        link_directories(${Open3D_LIBRARY_DIRS}/Release)
+    ENDIF()  
+    
 else()
     find_package(Open3D HINTS ${CMAKE_INSTALL_PREFIX}/lib/CMake)
     list(APPEND Open3D_LIBRARIES dl)
@@ -39,10 +51,8 @@ endif(WIN32)
 if (Open3D_FOUND)
     message(STATUS "Found Open3D ${Open3D_VERSION}")
 
-    # link_directories must be before add_executable
+    # link_directories must be before add_executable    
     
-    include_directories(${Open3D_INCLUDE_DIRS})
-    link_directories(${Open3D_LIBRARY_DIRS}/Release)
     #link_directories(${Open3D_LIBRARY_DIRS}/Debug)
     
     #target_link_libraries(TestVisualizer ${Open3D_LIBRARIES})
@@ -58,6 +68,11 @@ if (Open3D_FOUND)
                                 ${CMAKE_INSTALL_PREFIX}/bin/Open3D.dll
                                 ${CMAKE_CURRENT_BINARY_DIR}/Release)
     endif()
+
+    # === report Information
+    message([main] "Open3D_ROOT= $ENV{Open3D_ROOT}")
+    message ([main] "Open3D_INCLUDE_DIRS = ${Open3D_INCLUDE_DIRS}")
+    message ([main] "Open3D_LIBRARY_DIRS = ${Open3D_LIBRARY_DIRS}/Release")
 
 else ()
     message(SEND_ERROR "Open3D not found")
