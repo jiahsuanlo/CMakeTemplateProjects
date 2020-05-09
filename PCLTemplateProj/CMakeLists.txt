@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-
-set(PROJ_NAME example)
+cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(${PROJ_NAME})
 
-find_package(PCL 1.8.1 REQUIRED)
+find_package(PCL 1.10.1 REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
